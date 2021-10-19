@@ -1,0 +1,289 @@
+[2021-10-10 13:44:32,809] monoflex INFO: Using 1 GPUs
+[2021-10-10 13:44:32,809] monoflex INFO: Collecting environment info
+[2021-10-10 13:44:34,852] monoflex INFO: 
+PyTorch version: 1.4.0
+Is debug build: No
+CUDA used to build PyTorch: 10.1
+
+OS: Ubuntu 20.04.3 LTS
+GCC version: (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
+CMake version: Could not collect
+
+Python version: 3.7
+Is CUDA available: Yes
+CUDA runtime version: Could not collect
+GPU models and configuration: GPU 0: GeForce 940M
+Nvidia driver version: 455.23.05
+cuDNN version: /usr/lib/x86_64-linux-gnu/libcudnn.so.7.6.5
+
+Versions of relevant libraries:
+[pip3] numpy==1.20.3
+[pip3] torch==1.4.0
+[pip3] torchvision==0.5.0
+[conda] blas                      1.0                         mkl  
+[conda] mkl                       2021.3.0           h06a4308_520  
+[conda] mkl-service               2.4.0            py37h7f8727e_0  
+[conda] mkl_fft                   1.3.0            py37h42c9631_2  
+[conda] mkl_random                1.2.2            py37h51133e4_0  
+[conda] pytorch                   1.4.0           py3.7_cuda10.1.243_cudnn7.6.3_0    pytorch
+[conda] torchvision               0.5.0                py37_cu101    pytorch
+        Pillow (8.3.1)
+[2021-10-10 13:44:34,852] monoflex INFO: Namespace(batch_size=8, ckpt='pretrained_model/monoflex/model_moderate_best_soft.pth', config_file='runs/monoflex.yaml', dist_url='auto', eval_all_depths=False, eval_depth=False, eval_iou=False, eval_only=True, eval_score_iou=False, machine_rank=0, num_gpus=1, num_machines=1, num_work=8, opts=[], output=None, test=False, vis=False, vis_thre=0.25)
+[2021-10-10 13:44:34,852] monoflex INFO: Loaded configuration file runs/monoflex.yaml
+[2021-10-10 13:44:34,853] monoflex INFO: 
+DATASETS:
+  DETECT_CLASSES: ("Car", "Pedestrian", "Cyclist")
+  TRAIN: ("kitti_train",)
+  TEST: ("kitti_train",)
+  TRAIN_SPLIT: "train"
+  TEST_SPLIT: "val"
+
+  USE_RIGHT_IMAGE: False
+  CONSIDER_OUTSIDE_OBJS: True
+  FILTER_ANNO_ENABLE: True
+  
+INPUT:
+  HEATMAP_CENTER: '3D'
+  AUG_PARAMS: [[0.5]]
+
+  ORIENTATION: 'multi-bin'
+  MODIFY_ALPHA: False
+  ORIENTATION_BIN_SIZE: 4
+  
+  APPROX_3D_CENTER: 'intersect'
+  ADJUST_BOUNDARY_HEATMAP: True
+  KEYPOINT_VISIBLE_MODIFY: True
+
+MODEL:
+  INPLACE_ABN: True
+  HEAD:
+    REGRESSION_HEADS: [['2d_dim'], ['3d_offset'], ['corner_offset'], ['corner_uncertainty'], ['3d_dim'], ['ori_cls', 'ori_offset'], ['depth'], ['depth_uncertainty']]
+    REGRESSION_CHANNELS: [[4, ], [2, ], [20], [3], [3, ], [8, 8], [1, ], [1, ]]
+
+    ENABLE_EDGE_FUSION: True
+    TRUNCATION_OUTPUT_FUSION: 'add'
+    EDGE_FUSION_NORM: 'BN'
+    TRUNCATION_OFFSET_LOSS: 'log'
+
+    BN_MOMENTUM: 0.1
+
+    USE_NORMALIZATION: "BN"
+    LOSS_TYPE: ["Penalty_Reduced_FocalLoss", "L1", "giou", "L1"]
+
+    MODIFY_INVALID_KEYPOINT_DEPTH: True
+
+    CORNER_LOSS_DEPTH: 'soft_combine'
+    LOSS_NAMES: ['hm_loss', 'bbox_loss', 'depth_loss', 'offset_loss', 'orien_loss', 'dims_loss', 'corner_loss', 'keypoint_loss', 'keypoint_depth_loss', 'trunc_offset_loss', 'weighted_avg_depth_loss']
+    LOSS_UNCERTAINTY: [True, True, False, True, True, True, True, True, False, True, True]
+    INIT_LOSS_WEIGHT: [1, 1, 1, 0.5, 1, 1, 0.2, 1.0, 0.2, 0.1, 0.2]
+    
+    CENTER_MODE: 'max'
+    HEATMAP_TYPE: 'centernet'
+    DIMENSION_REG: ['exp', True, False]
+    USE_UNCERTAINTY: False
+
+    DEPTH_MODE: 'inv_sigmoid'
+    OUTPUT_DEPTH: 'soft'
+    DIMENSION_WEIGHT: [1, 1, 1]
+
+    UNCERTAINTY_INIT: True
+
+  REDUCE_LOSS_NORM: True
+  USE_SYNC_BN: True
+
+SOLVER:
+  OPTIMIZER: 'adamw'
+  BASE_LR: 3e-4
+  WEIGHT_DECAY: 1e-5
+  LR_WARMUP: False
+  WARMUP_STEPS: 2000
+
+  # for 1 GPU
+  LR_DECAY: 0.1
+
+  EVAL_AND_SAVE_EPOCH: True
+  EVAL_EPOCH_INTERVAL: 1
+  SAVE_CHECKPOINT_EPOCH_INTERVAL: 2
+  MAX_EPOCHS: 100
+  DECAY_EPOCH_STEPS: [80, 90]
+
+  IMS_PER_BATCH: 8
+  EVAL_INTERVAL: 1000
+
+TEST:
+  UNCERTAINTY_AS_CONFIDENCE: True
+  DETECTIONS_THRESHOLD: 0.2
+  METRIC: ['R40']
+
+OUTPUT_DIR: "./output/toy_experiments"
+[2021-10-10 13:44:34,854] monoflex INFO: Running with config:
+CUDNN_BENCHMARK: True
+DATALOADER:
+  ASPECT_RATIO_GROUPING: False
+  NUM_WORKERS: 8
+  SIZE_DIVISIBILITY: 0
+DATASETS:
+  CENTER_RADIUS_RATIO: 0.1
+  CONSIDER_OUTSIDE_OBJS: True
+  DETECT_CLASSES: ('Car', 'Pedestrian', 'Cyclist')
+  FILTER_ANNOS: [0.9, 20]
+  FILTER_ANNO_ENABLE: True
+  MAX_OBJECTS: 40
+  MAX_RADIUS: 0.0
+  MIN_RADIUS: 0.0
+  TEST: ('kitti_train',)
+  TEST_SPLIT: val
+  TRAIN: ('kitti_train',)
+  TRAIN_SPLIT: train
+  USE_RIGHT_IMAGE: False
+INPUT:
+  ADJUST_BOUNDARY_HEATMAP: True
+  ADJUST_DIM_HEATMAP: False
+  ALLOW_OUTSIDE_CENTER: False
+  APPROX_3D_CENTER: intersect
+  AUG_PARAMS: [[0.5]]
+  ELLIP_GAUSSIAN: False
+  HEATMAP_CENTER: 3D
+  HEATMAP_RATIO: 0.5
+  HEIGHT_TEST: 384
+  HEIGHT_TRAIN: 384
+  IGNORE_DONT_CARE: False
+  KEYPOINT_VISIBLE_MODIFY: True
+  MODIFY_ALPHA: False
+  ORIENTATION: multi-bin
+  ORIENTATION_BIN_SIZE: 4
+  PIXEL_MEAN: [0.485, 0.456, 0.406]
+  PIXEL_STD: [0.229, 0.224, 0.225]
+  TO_BGR: False
+  USE_APPROX_CENTER: False
+  WIDTH_TEST: 1280
+  WIDTH_TRAIN: 1280
+MODEL:
+  BACKBONE:
+    CONV_BODY: dla34
+    DOWN_RATIO: 4
+    FREEZE_CONV_BODY_AT: 0
+  DEPTH_REFINE:
+    BIN_NUM: 5
+    BIN_SIZE: 1
+    DETACH_DEPTH: True
+    ENABLE: False
+    JITTER: [2, 1]
+    NUM_CHANNEL: [64, 128]
+    OUTPUT_SIZE: [14, 14]
+    REFINE_THRESH: 0.2
+    REFINE_THRESH_TYPE: 2D
+    USE_EARLY_FEAT: True
+  DEVICE: cuda
+  GROUP_NORM:
+    DIM_PER_GP: -1
+    EPSILON: 1e-05
+    NUM_GROUPS: 32
+  HEAD:
+    BIAS_BEFORE_BN: False
+    BN_MOMENTUM: 0.1
+    CENTER_AGGREGATION: False
+    CENTER_MODE: max
+    CENTER_SAMPLE: center
+    CORNER_LOSS_DEPTH: soft_combine
+    DEPTH_FROM_KEYPOINT: False
+    DEPTH_MODE: inv_sigmoid
+    DEPTH_RANGE: [0.1, 100]
+    DEPTH_REFERENCE: (26.494627, 16.05988)
+    DIMENSION_MEAN: ((3.884, 1.5261, 1.6286), (0.8423, 1.7607, 0.6602), (1.7635, 1.7372, 0.5968))
+    DIMENSION_REG: ['exp', True, False]
+    DIMENSION_STD: ((0.4259, 0.1367, 0.1022), (0.2349, 0.1133, 0.1427), (0.1766, 0.0948, 0.1242))
+    DIMENSION_WEIGHT: [1, 1, 1]
+    EDGE_FUSION_KERNEL_SIZE: 3
+    EDGE_FUSION_NORM: BN
+    EDGE_FUSION_RELU: False
+    ENABLE_EDGE_FUSION: True
+    HEATMAP_TYPE: centernet
+    INIT_LOSS_WEIGHT: [1, 1, 1, 0.5, 1, 1, 0.2, 1.0, 0.2, 0.1, 0.2]
+    INIT_P: 0.01
+    KEYPOINT_LOSS: L1
+    KEYPOINT_NORM_FACTOR: 1.0
+    KEYPOINT_TO_DEPTH_RELU: True
+    KEYPOINT_XY_WEIGHT: [1, 1]
+    LOSS_ALPHA: 0.25
+    LOSS_BETA: 4
+    LOSS_GAMMA: 2
+    LOSS_NAMES: ['hm_loss', 'bbox_loss', 'depth_loss', 'offset_loss', 'orien_loss', 'dims_loss', 'corner_loss', 'keypoint_loss', 'keypoint_depth_loss', 'trunc_offset_loss', 'weighted_avg_depth_loss']
+    LOSS_PENALTY_ALPHA: 2
+    LOSS_TYPE: ['Penalty_Reduced_FocalLoss', 'L1', 'giou', 'L1']
+    LOSS_UNCERTAINTY: [True, True, False, True, True, True, True, True, False, True, True]
+    MODIFY_INVALID_KEYPOINT_DEPTH: True
+    NUM_CHANNEL: 256
+    OUTPUT_DEPTH: soft
+    PREDICTOR: Base_Predictor
+    REGRESSION_AREA: False
+    REGRESSION_CHANNELS: [[4], [2], [20], [3], [3], [8, 8], [1], [1]]
+    REGRESSION_HEADS: [['2d_dim'], ['3d_offset'], ['corner_offset'], ['corner_uncertainty'], ['3d_dim'], ['ori_cls', 'ori_offset'], ['depth'], ['depth_uncertainty']]
+    REGRESSION_OFFSET_STAT: [-0.5844396972302358, 9.075032501413093]
+    REGRESSION_OFFSET_STAT_NORMAL: [-0.01571878324572745, 0.05915441457040611]
+    SUPERVISE_CORNER_DEPTH: False
+    TRUNCATION_CLS: False
+    TRUNCATION_OFFSET_LOSS: log
+    TRUNCATION_OUTPUT_FUSION: add
+    UNCERTAINTY_INIT: True
+    UNCERTAINTY_RANGE: [-10, 10]
+    UNCERTAINTY_WEIGHT: 1.0
+    USE_NORMALIZATION: BN
+    USE_UNCERTAINTY: False
+  INPLACE_ABN: True
+  NORM: BN
+  PRETRAIN: True
+  REDUCE_LOSS_NORM: True
+  USE_SYNC_BN: True
+  WEIGHT: 
+OUTPUT_DIR: ./output/toy_experiments
+PATHS_CATALOG: /home/mansour/codes/MonoFlex/config/paths_catalog.py
+SEED: -1
+SOLVER:
+  BACKBONE_LR_FACTOR: 1.0
+  BASE_LR: 0.0003
+  BIAS_LR_FACTOR: 2.0
+  DECAY_EPOCH_STEPS: [80, 90]
+  DIV_FACTOR: 10
+  EVAL_AND_SAVE_EPOCH: True
+  EVAL_EPOCH_INTERVAL: 1
+  EVAL_INTERVAL: 1000
+  GRAD_ALPHA: 0.9
+  GRAD_CLIP_FACTOR: 99
+  GRAD_NORM_CLIP: -1
+  IMS_PER_BATCH: 8
+  LOAD_OPTIMIZER_SCHEDULER: True
+  LR_CLIP: 1e-07
+  LR_DECAY: 0.1
+  LR_WARMUP: False
+  MASTER_BATCH: -1
+  MAX_EPOCHS: 100
+  MAX_ITERATION: 30000
+  MOMS: [0.95, 0.85]
+  OPTIMIZER: adamw
+  PCT_START: 0.4
+  SAVE_CHECKPOINT_EPOCH_INTERVAL: 2
+  SAVE_CHECKPOINT_INTERVAL: 1000
+  STEPS: (20000, 25000)
+  WARMUP_EPOCH: 1
+  WARMUP_STEPS: 2000
+  WEIGHT_DECAY: 1e-05
+START_TIME: 10-10 13:44:32
+TEST:
+  DETECTIONS_PER_IMG: 50
+  DETECTIONS_THRESHOLD: 0.2
+  EVAL_DEPTH: False
+  EVAL_DEPTH_METHODS: []
+  EVAL_DIS_IOUS: False
+  IMS_PER_BATCH: 1
+  METRIC: ['R40']
+  NMS_CLASS_AGNOSTIC: False
+  NMS_THRESH: -1.0
+  PRED_2D: True
+  SINGLE_GPU_TEST: True
+  UNCERTAINTY_AS_CONFIDENCE: True
+  USE_NMS: none
+  VISUALIZE_THRESHOLD: 0.25
+[2021-10-10 13:44:34,854] monoflex.seed INFO: Using a generated random seed 91257
+[2021-10-10 13:44:36,681] monoflex.checkpointer INFO: Loading checkpoint from pretrained_model/monoflex/model_moderate_best_soft.pth
+[2021-10-10 13:44:36,966] monoflex.checkpointer INFO: loading checkpoint from iterations 39904
